@@ -3,6 +3,7 @@ import uvicorn
 import websockets
 from task.wrappers.websocket_wrapper import TaskWrapper
 import asyncio
+from db.db_startup import startup_database
 
 app = FastAPI()
 
@@ -17,6 +18,11 @@ app = FastAPI()
 @app.get("/")
 async def index():
     return {"message": "hello"}
+
+
+@app.on_event("startup")
+async def startup():
+    await startup_database()
 
 
 if __name__ == '__main__':
