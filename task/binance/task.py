@@ -1,3 +1,4 @@
+from datetime import datetime
 import json
 from abc import ABC
 import asyncio
@@ -16,7 +17,7 @@ class BinanceTask(BinanceTaskBase):
         self.url = kwargs.get('url', None)
 
     async def connection(self) -> WebSocketClientProtocol:
-        ws = await websockets.connect(self.url)
+        ws = await websockets.connect(self.url, ping_interval=None, ping_timeout=None)
         logger.info(f"connecting to {self.url}")
         return ws
 
@@ -33,12 +34,14 @@ class BinanceTask(BinanceTaskBase):
     #         raise Exception(f"Exception occurred, trouble with connecting")
 
     async def execute(self, ws: WebSocketClientProtocol) -> None:
-        try:
-            await ws.pong()
-            data = await ws.recv()
-            data = json.loads(data)
-            logger.debug(f"Price: {data.get("p")} {self.currency_pair}")
-            return data.get("p")
-        except websockets.WebSocketException as error:
-            logger.warning(f"Exception occurred, trouble with connecting to websocket {self.url}, {error}")
-            raise Exception(f"Exception occurred, trouble with connecting")
+        await ws.pong()
+        data = await ws.recv()
+        data = json.loads(data)
+        logger.debug(f"Price: {data.get("p")} {self.currency_pair} {self.currency_pair}")
+        if self.benchmark() > 5:
+            logger.warning(f"Time update: {self.benchmark()}")
+        else:
+            logger.info(f"Time update: {self.benchmark()} {self.currency_pair}")
+        self.last_update = datetime.now()
+        return data.get("p")
+

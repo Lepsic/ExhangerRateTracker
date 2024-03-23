@@ -18,5 +18,7 @@ class BaseTask(ABC):
 
     def benchmark(self):
         """Вычисление таймингов обновления"""
-        return datetime.now() - self.last_update
+        if self.last_update is None:
+            return 0
+        return (datetime.now() - self.last_update).seconds
 
