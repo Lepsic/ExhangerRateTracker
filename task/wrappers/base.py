@@ -18,10 +18,10 @@ class BaseWrapper(ABC):
         """Создание классов"""
         pass
 
-    # @abstractmethod
-    # async def preproccess(self):
-    #     """Получение ссылок из бд, символьной пары, всяких описаний, полный простор для творчества"""
-    #     pass
+    @abstractmethod
+    async def preproccess(self):
+        """Получение ссылок из бд, символьной пары, всяких описаний, полный простор для творчества"""
+        pass
 
     @abstractmethod
     async def task_creation(self, *args, **kwargs):

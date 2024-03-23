@@ -1,19 +1,17 @@
 from datetime import datetime
 import json
-from abc import ABC
-import asyncio
 import websockets
 from websockets import WebSocketClientProtocol
 from loguru import logger
 
-from task.binance.base import BinanceTaskBase
+from task.ws_task.base import WebSocketTaskBase
 
 
-class BinanceTask(BinanceTaskBase):
+class BinanceTask(WebSocketTaskBase):
     logger.add("pars.log", rotation="500MB")
 
     def __init__(self, *args, **kwargs):
-        super(BinanceTaskBase, self).__init__(*args, **kwargs)
+        super(WebSocketTaskBase, self).__init__(*args, **kwargs)
         self.url = kwargs.get('url', None)
 
     async def connection(self) -> WebSocketClientProtocol:

@@ -3,7 +3,7 @@ from abc import abstractmethod
 import websockets
 
 
-class BinanceTaskBase(BaseTask):
+class WebSocketTaskBase(BaseTask):
 
     def __init__(self, *args, **kwargs):
         super(BaseTask, self).__init__(*args, **kwargs)
