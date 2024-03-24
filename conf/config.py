@@ -10,5 +10,13 @@ class ConfigDatabase(object):
     CONNECT_INFO_FIELD = config('CONNECT_INFO_FIELD', default='trade_info')
 
 
-class Broker(object):
+class RabbitMQ(object):
     BROKER_URL = config('BROKER_URL', default='amqp://guest:guest@localhost//')
+    arguments = {
+        'x-max-length': 1
+    }
+
+
+class Coingecko(object):
+    API_KEY = config('API_KEY', default='')
+

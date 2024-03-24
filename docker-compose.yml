@@ -8,3 +8,12 @@ services:
     ports:
       - "5555:5432"
 
+  rabbit:
+    image: broker-rabbit-rate-tracker
+    container_name: rabbitmq
+    build:
+      context: ./rabbit
+      dockerfile: Dockerfile
+    ports:
+      - "5672:5672"
+      - "15672:15672"
