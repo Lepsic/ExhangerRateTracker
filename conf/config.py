@@ -20,3 +20,7 @@ class RabbitMQ(object):
 class Coingecko(object):
     API_KEY = config('API_KEY', default='')
 
+class ReddisCache(object):
+    REDIS_URL = config('REDIS_URL', default='localhost')
+    REDIS_PORT = config('REDIS_PORT', default='6379')
+

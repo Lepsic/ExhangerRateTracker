@@ -3,13 +3,18 @@ from rabbit.queue.create import CreateQueue
 from db.connect_info.get.get import get_connection_info
 from conf.config import RabbitMQ
 from loguru import logger
+from cahce.connection.connect import connection
+from cahce.set.set import set_data
+import json
 class Consumer:
     def __init__(self):
         self.queues = []
         self.queue_creator = CreateQueue()
+        self.connect_redis = None
 
-    def consume(self, message: aio_pika.Message):
-        pass
+
+
+
 
     async def get_queues_name(self):
         connections_info = await get_connection_info()
@@ -27,9 +32,17 @@ class Consumer:
                 self.queues.append(await channel.get_queue(name))
 
     async def callback(self, message: aio_pika.Message):
+        data = message.body.decode()
+        data = json.loads(data)
+        key = next(iter(data))
+        value = str(data[key])
+        await set_data(key=key, value=value, conn=self.connect_redis)
         logger.debug("Received message: {}".format(message.body.decode()))
 
+
+
     async def start(self):
+        self.connect_redis = await connection()
         await self.create_queue()
         for queue in self.queues:
             await queue.consume(self.callback)
