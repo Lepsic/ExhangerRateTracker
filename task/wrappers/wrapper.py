@@ -35,7 +35,7 @@ class TaskWrapper(BaseWrapper):
                 for key, value in data["data"].items():
                     queue = self.creator_queue.queue_dict.get(key)
                     if queue is not None:
-                        message = aio_pika.Message(body=json.dumps(value).encode())
+                        message = aio_pika.Message(body=json.dumps({queue.name.replace("/", "-"): float(value)}).encode())
                         await queue.channel.default_exchange.publish(message=message, routing_key=queue.name)
                 await asyncio.sleep(5)
         except websockets.exceptions.WebSocketException as error:
@@ -84,4 +84,6 @@ class TaskWrapper(BaseWrapper):
         module_name, class_name = path.rsplit(":", 1)
         module = import_module(module_name)
         return getattr(module, class_name)
+
+
 

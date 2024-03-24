@@ -36,7 +36,7 @@ class BinanceTask(WebSocketTaskBase):
         res = {"data": {}}
         data = await ws.recv()
         data = json.loads(data)
-        res["data"].update({get_queue_name(self.currency_pair): data["p"]})
+        res["data"].update({get_queue_name(self.currency_pair): str(data["p"])})
         if self.benchmark() > 5:
             logger.warning(f"Time update: {self.benchmark()} for {self.currency_pair} is overtime")
         else:
