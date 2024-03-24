@@ -3,12 +3,12 @@ import json
 import websockets
 from websockets import WebSocketClientProtocol
 from loguru import logger
-
+from rabbit.queue.get import get_queue_name
 from task.ws_task.base import WebSocketTaskBase
 
 
 class BinanceTask(WebSocketTaskBase):
-    logger.add("pars.log", rotation="500MB")
+    logger.add("parswebsocket.log", rotation="500MB")
 
     def __init__(self, *args, **kwargs):
         super(WebSocketTaskBase, self).__init__(*args, **kwargs)
@@ -31,15 +31,16 @@ class BinanceTask(WebSocketTaskBase):
     #         logger.warning(f"Exception occurred, trouble with connecting to websocket {self.url}, {error}")
     #         raise Exception(f"Exception occurred, trouble with connecting")
 
-    async def execute(self, ws: WebSocketClientProtocol) -> None:
+    async def execute(self, ws: WebSocketClientProtocol) -> dict[str, dict]:
         await ws.pong()
+        res = {"data": {}}
         data = await ws.recv()
         data = json.loads(data)
-        logger.debug(f"Price: {data.get("p")} {self.currency_pair} {self.currency_pair}")
+        res["data"].update({get_queue_name(self.currency_pair): data["p"]})
         if self.benchmark() > 5:
-            logger.warning(f"Time update: {self.benchmark()}")
+            logger.warning(f"Time update: {self.benchmark()} for {self.currency_pair} is overtime")
         else:
             logger.info(f"Time update: {self.benchmark()} {self.currency_pair}")
         self.last_update = datetime.now()
-        return data.get("p")
+        return res
 

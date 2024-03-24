@@ -12,7 +12,7 @@ class BaseTask(ABC):
         self.currency_pair: str | None = kwargs.get('currency_pair', None)
 
     @abstractmethod
-    async def execute(self, *args, **kwargs) -> float:
+    async def execute(self, *args, **kwargs) -> dict:
         """Execute функцию нужна для обнволения курса"""
         pass
 
