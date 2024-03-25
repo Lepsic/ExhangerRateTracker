@@ -2,7 +2,7 @@ from fastapi import FastAPI
 import uvicorn
 import aio_pika
 from rabbit.consumer.consumer import Consumer
-from api.v1.enpoints.get import router as router_v1
+from api.v1.enpoints.endpoint import router as router_v1
 from rabbit.queue.create import CreateQueue
 from db.connect_info.get.get import get_connection_info
 from db.db_startup import startup_database

@@ -9,7 +9,7 @@ from api.v1.schema.currency_pair import Course, CurrencyPairData
 router = APIRouter(prefix="/v1")
 
 
-@router.get("/currency_pair/}")
+@router.get("/currency_pair/")
 async def get_currency_pair(currency_pair: str = Query(...)) -> CurrencyPairData:
     data = await get_data(currency_pair)
     if data is None:
