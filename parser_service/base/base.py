@@ -10,6 +10,7 @@ class BaseTask(ABC):
         self.reconnect_count: int = 0
 
         self.currency_pair: str | None = kwargs.get('currency_pair', None)
+        self.exchanger: str = kwargs.get('exchanger')
 
     @abstractmethod
     async def execute(self, *args, **kwargs) -> dict:

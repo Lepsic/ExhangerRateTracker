@@ -1,4 +1,4 @@
-from task.base.base import BaseTask
+from parser_service.base.base import BaseTask
 
 
 class HttpTaskBase(BaseTask):

@@ -1,11 +1,11 @@
 import websockets
 from websockets import WebSocketClientProtocol
-from task.wrappers.base import BaseWrapper
+from parser_service.wrappers.base import BaseWrapper
 from loguru import logger
 import asyncio
 from db.connect_info.get.get import get_connection_info
 from db.connect_info.schema.get.connection_info import ConnectionInfo
-from task.base.base import BaseTask
+from parser_service.base.base import BaseTask
 from importlib import import_module
 from rabbit.queue.get import get_queue_name
 from rabbit.queue.create import CreateQueue
@@ -23,6 +23,7 @@ class TaskWrapper(BaseWrapper):
 
     async def task(self, instance: BaseTask, ws: WebSocketClientProtocol, channel: str):
         """Queue - очередь на брокере"""
+        logger.info(f"Starting task: {instance}")
         reconnect_count = 0
         try:
             while True:
@@ -35,7 +36,12 @@ class TaskWrapper(BaseWrapper):
                 for key, value in data["data"].items():
                     queue = self.creator_queue.queue_dict.get(key)
                     if queue is not None:
-                        message = aio_pika.Message(body=json.dumps({queue.name.replace("/", "-"): float(value)}).encode())
+                        message = aio_pika.Message(body=json.dumps({queue.name.replace("/", "-"):
+                                                                        {"value": float(value),
+                                                                         "exchanger": instance.exchanger,
+                                                                         "direction":
+                                                                             queue.name.replace("/", "-")}}).encode())
+
                         await queue.channel.default_exchange.publish(message=message, routing_key=queue.name)
                 await asyncio.sleep(5)
         except websockets.exceptions.WebSocketException as error:
@@ -57,11 +63,11 @@ class TaskWrapper(BaseWrapper):
         for instance in instances:
             task = self.get_class_instance(instance.task_type)
             task_instance = task(url=instance.url, currency_pair=instance.currency_pair,
-                                 channel=await self.creator_queue.create(instance))
+                                 channel=await self.creator_queue.create(instance), exchanger=instance.wrapper_type)
             tasks.append(task_instance)
         return tasks
 
-        # return [BinanceTask(currency_pair="BTC-USDT", url="wss://stream.binance.com:9443/ws/btcusdt@trade")]
+        # return [BinanceTask(enpoints="BTC-USDT", url="wss://stream.binance.com:9443/ws/btcusdt@trade")]
 
     async def task_creation(self, *args, **kwargs) -> list:
         tasks = []
@@ -72,11 +78,13 @@ class TaskWrapper(BaseWrapper):
         return tasks
 
     async def task_startup(self):
+        logger.info("Starting parser service")
         tasks = await self.task_creation()
         await asyncio.gather(*tasks)
 
     async def preproccess(self) -> list[ConnectionInfo]:
         instances = await get_connection_info()
+        logger.info("Prepsocess service: {}".format(instances))
         return instances
 
     @classmethod

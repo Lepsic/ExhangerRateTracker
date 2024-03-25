@@ -2,13 +2,16 @@ from db.connect_info.schema.get.connection_info import ConnectionInfo
 import aio_pika
 from conf.config import RabbitMQ
 import asyncio
+from loguru import logger
 
 class CreateQueue:
     def __init__(self):
         self.queue_dict = {}
 
-    async def create(self, connect_info: ConnectionInfo) -> list:
+    async def create(self, connect_info: ConnectionInfo) -> None:
+        logger.info(f"Connected to RabbitMQ broker {RabbitMQ.BROKER_URL} start")
         connection = await aio_pika.connect_robust(RabbitMQ.BROKER_URL)
+        logger.info(f"Connected to RabbitMQ broker {RabbitMQ.BROKER_URL} end")
         channel = await connection.channel()
         for name in self.create_queue_name(connect_info):
             if name in self.queue_dict.keys():
@@ -23,23 +26,10 @@ class CreateQueue:
                 names.append("/".join([parsing, target]))
         return names
 
-    def separate(self, currency_pair: str):
+    def separate(self, currency_pair: str) -> list:
         parsing, target = currency_pair.rsplit("-", 1)
         parsing = parsing.split(",")
         target = target.split(",")
         return [parsing, target]
 
 
-if __name__ == "__main__":
-    create_queue = CreateQueue()
-    # queue.create_queue_name(connect_info=[ConnectionInfo(currency_pair="tron-usd", url="http://localhost:", id=1,
-    #                                                             task_type="test", wrapper_type="test"),
-    #                                              ConnectionInfo(currency_pair="bitcoin,ethereum,tether,tron-rub,usd",
-    #                                                             url="http://localhost:", id=1,
-    #                                                             task_type="test", wrapper_type="test")])
-
-    asyncio.run(create_queue.create(ConnectionInfo(currency_pair="bitcoin,ethereum,tether,tron-rub,usd",
-                                                        url="http://localhost:", id=1,
-                                                        task_type="test", wrapper_type="test")))
-    asyncio.run(create_queue.create(ConnectionInfo(currency_pair="tron-usd", url="http://localhost:", id=1,
-                                                                task_type="test", wrapper_type="test")))

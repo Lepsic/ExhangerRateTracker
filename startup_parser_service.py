@@ -1,4 +1,4 @@
-from task.wrappers.wrapper import TaskWrapper
+from parser_service.wrappers.wrapper import TaskWrapper
 import asyncio
 
 

@@ -6,7 +6,7 @@ import aiohttp
 from db.connect_info.schema.get.connection_info import ConnectionInfo
 import json
 from loguru import logger
-from task.http_task.base import HttpTaskBase
+from parser_service.http_task.base import HttpTaskBase
 from rabbit.queue.get import get_queue_name
 
 class CoingeckoTask(HttpTaskBase):

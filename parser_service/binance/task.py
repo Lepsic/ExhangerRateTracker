@@ -4,7 +4,7 @@ import websockets
 from websockets import WebSocketClientProtocol
 from loguru import logger
 from rabbit.queue.get import get_queue_name
-from task.ws_task.base import WebSocketTaskBase
+from parser_service.ws_task.base import WebSocketTaskBase
 
 
 class BinanceTask(WebSocketTaskBase):
@@ -25,7 +25,7 @@ class BinanceTask(WebSocketTaskBase):
     #             await websocket.pong()
     #             data = await websocket.recv()
     #             data = json.loads(data)
-    #             logger.debug(f"Price: {data.get("p")} {super().currency_pair}")
+    #             logger.debug(f"Price: {data.get("p")} {super().enpoints}")
     #             return data.get("p")
     #     except websockets.WebSocketException as error:
     #         logger.warning(f"Exception occurred, trouble with connecting to websocket {self.url}, {error}")

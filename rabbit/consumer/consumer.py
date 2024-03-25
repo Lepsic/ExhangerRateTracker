@@ -11,6 +11,7 @@ class Consumer:
         self.queues = []
         self.queue_creator = CreateQueue()
         self.connect_redis = None
+        logger.info("Consumer initialized")
 
 
 
@@ -42,7 +43,9 @@ class Consumer:
 
 
     async def start(self):
+        logger.info("Starting consumer")
         self.connect_redis = await connection()
+        logger.info("Connection redis established")
         await self.create_queue()
         for queue in self.queues:
             await queue.consume(self.callback)

@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 
-from task.base.base import BaseTask
+from parser_service.base.base import BaseTask
 
 
 class BaseWrapper(ABC):
