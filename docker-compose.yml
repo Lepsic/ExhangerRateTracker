@@ -47,6 +47,8 @@ services:
       - REDIS_URL=reddis
     networks:
       - rate-tracker-network
+    ports:
+      - "8000:8000"
     depends_on:
       reddis:
         condition: service_started
